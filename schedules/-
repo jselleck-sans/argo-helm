@@ -1,6 +1,38 @@
-yaml:
-  file:
-    here: \"\"
-    cmd: |-
-      
+apiVersion: argoproj.io/v1alpha1 kind: CronWorkflow metadata:
+  labels:
+    channelname: "channelname"
+    channelid: ""
+    command: ""
+    subcommand: "" 
+  generateName: sr--schedule-
+spec:
+  workflowSpec:
+    templates:
+      - name: cron
+        dag:
+          tasks:
+            - name: send-nats
+              arguments:
+                parameters:
+                  - name: data
+                    value: >-
+                      
+                  - name: subject
+                    value: 'org.sans.platform.WORKFLOW.calendar.submit'
+                  - name: server
+                    value: 'nats://sans-nats.sans-nats.svc:4222'
+                  - name: source
+                    value: 'cron'
+                  - name: type
+                    value: 'action.published'
+              templateRef:
+                name: send-results
+                template: main
+    entrypoint: cron
+    ttlStrategy:
+      secondsAfterCompletion: 300
+    podGC:
+      strategy: OnPodCompletion
+  schedule: ""
+
 
